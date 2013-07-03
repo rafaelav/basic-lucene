@@ -2,6 +2,7 @@ package lucene.basic;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 import lucene.basic.data.HotelDatabase;
 import lucene.basic.index.Indexer;
@@ -19,7 +20,7 @@ public class Main {
 	public Main() {
 	}
 
-	public static void main(String[] args) throws IOException, ParseException {
+	public static void main(String[] args) throws IOException, ParseException, GeneralSecurityException {
 			// build a lucene index
 			System.out.println("Indexing ...");
 			Indexer indexer = new Indexer();
