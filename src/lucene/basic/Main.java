@@ -1,6 +1,5 @@
 package lucene.basic;
 
-import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
@@ -9,18 +8,15 @@ import lucene.basic.index.Indexer;
 import lucene.basic.search.Searcher;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.store.FSDirectory;
 
 public class Main {
 	public Main() {
 	}
 
-	public static void main(String[] args) throws IOException, ParseException, GeneralSecurityException {
+	public static void main(String[] args) throws IOException, GeneralSecurityException, ParseException {
 			// build a lucene index
 			System.out.println("Indexing ...");
 			Indexer indexer = new Indexer();

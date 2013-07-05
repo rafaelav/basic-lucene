@@ -10,12 +10,13 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.transform.CompressedIndexDirectory;
+import org.apache.lucene.store.transform.TransformedDirectory;
+import org.apache.lucene.store.transform.algorithm.security.DataDecryptor;
+import org.apache.lucene.store.transform.algorithm.security.DataEncryptor;
 import org.apache.lucene.util.Version;
 
 public class Indexer {
@@ -30,21 +31,20 @@ public class Indexer {
 	public IndexWriter getIndexWriter() throws IOException, GeneralSecurityException {
 		if (iWriter == null) {
 			// create a new analyzer
-			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_43);
+			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_36);
 			// open the needed directory to store the indexes
 			Directory directory = FSDirectory.open(new File("indexed"));
 			
 			// added lucene-transform
-//			byte[] salt = new byte[16];
-//			String password = "lucenetransform";
-//			DataEncryptor enc = new DataEncryptor("AES/ECB/PKCS5Padding", password, salt, 128, false);
-//			DataDecryptor dec = new DataDecryptor(password, salt, false);
-//			Directory cdir = new TransformedDirectory(directory, enc, dec);
-//	         Directory cdir = new CompressedIndexDirectory(directory);
+			byte[] salt = new byte[16];
+			String password = "lucenetransform";
+			DataEncryptor enc = new DataEncryptor("AES/ECB/PKCS5Padding", password, salt, 128, false);
+			DataDecryptor dec = new DataDecryptor(password, salt, false);
+			Directory cdir = new TransformedDirectory(directory, enc, dec);
 			// finish lucene-transform
 
-			IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_43, analyzer);
-			iWriter = new IndexWriter(directory, config);
+			IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_36, analyzer);
+			iWriter = new IndexWriter(cdir, config);
 		}
 
 		return iWriter;
@@ -61,24 +61,19 @@ public class Indexer {
 		iWriter = getIndexWriter();
 		if (iWriter != null) {
 
-			// for (Hotel hotel : hotels) {
 			Document doc = new Document();
 
 			// adding needed information
-			doc.add(new Field("id", hotel.getId(), TextField.TYPE_STORED));
-			doc.add(new Field("name", hotel.getName(), TextField.TYPE_STORED));
-			doc.add(new Field("city", hotel.getCity(), TextField.TYPE_STORED));
-			doc.add(new Field("description", hotel.getDescription(), TextField.TYPE_STORED));
+			doc.add(new Field("id", hotel.getId(), Field.Store.YES, Field.Index.ANALYZED));
+			doc.add(new Field("name", hotel.getName(), Field.Store.YES, Field.Index.ANALYZED));
+			doc.add(new Field("city", hotel.getCity(), Field.Store.YES, Field.Index.ANALYZED));
+			doc.add(new Field("description", hotel.getDescription(), Field.Store.YES, Field.Index.ANALYZED));
 			String fullSearchableText = hotel.getName() + " " + hotel.getCity() + " "
 					+ hotel.getDescription();
-			doc.add(new Field("content", fullSearchableText, TextField.TYPE_STORED));
+			doc.add(new Field("content", fullSearchableText, Field.Store.YES, Field.Index.ANALYZED));
 
 			// indexing document
 			iWriter.addDocument(doc);
-			// }
-
-			// closing index
-			// closeIndexWriter();
 		}
 	}
 
