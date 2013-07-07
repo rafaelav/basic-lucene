@@ -1,4 +1,4 @@
-package lucene.security;
+package lucene.basic;
 
 import java.io.File;
 import java.io.IOException;

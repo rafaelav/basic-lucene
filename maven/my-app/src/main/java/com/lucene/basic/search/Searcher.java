@@ -1,4 +1,4 @@
-package lucene.security.search;
+package lucene.basic.search;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,10 +1,10 @@
-package lucene.security.index;
+package lucene.basic.index;
 
 import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
-import lucene.security.data.Hotel;
+import lucene.basic.data.Hotel;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -81,8 +81,8 @@ public class Indexer {
 		getIndexWriter();
 
 		// index all entries
-		for (int i=0; i<hotels.length; i++) {
-			indexData(hotels[i]);
+		for (int i=0; i<hotels.length; ) {
+			indexData(hotel);
 		}
 
 		// closing index writer
