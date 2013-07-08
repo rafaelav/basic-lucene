@@ -19,7 +19,11 @@ package com.lucene.basic.provider;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.NIOFSDirectory;
+import org.apache.lucene.store.transform.TransformedDirectory;
+import org.apache.lucene.store.transform.algorithm.security.DataDecryptor;
+import org.apache.lucene.store.transform.algorithm.security.DataEncryptor;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +39,12 @@ public class DirectoryProvider implements SearchProvider<Directory> {
     }
 
     @Override
-    public Directory get() throws IOException {
-        return NIOFSDirectory.open(new File(directory));
+    public Directory get() throws Exception {
+        Directory directory = FSDirectory.open(new File("indexed"));
+        byte[] salt = new byte[16];
+        String password = "lucenetransform";
+        DataEncryptor enc = new DataEncryptor("AES/ECB/PKCS5Padding", password, salt, 128, false);
+        DataDecryptor dec = new DataDecryptor(password, salt, false);
+        return new TransformedDirectory(directory, enc, dec);
     }
 }
