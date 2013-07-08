@@ -1,11 +1,11 @@
-package lucene.basic;
+package com.lucene.basic;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
-import lucene.basic.data.HotelDatabase;
-import lucene.basic.index.Indexer;
-import lucene.basic.search.Searcher;
+import com.lucene.basic.data.HotelDatabase;
+import com.lucene.basic.index.Indexer;
+import com.lucene.basic.search.Searcher;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryParser.ParseException;

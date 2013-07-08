@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package lucene.basic.data;
+package com.lucene.basic.data;
 
 public class HotelDatabase {
     
@@ -61,7 +61,7 @@ public class HotelDatabase {
     }
     
     public static Hotel getHotel(String id) {
-        for(int i=0; i<HOTELS.length; i++) {
+        for(int i=0;i<HOTELS.length;i++) {
             if (id.equals(HOTELS[i].getId())) {
                 return HOTELS[i];
             }

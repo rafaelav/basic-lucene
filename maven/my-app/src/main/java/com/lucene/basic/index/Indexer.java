@@ -1,10 +1,10 @@
-package lucene.basic.index;
+package com.lucene.basic.index;
 
 import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
-import lucene.basic.data.Hotel;
+import com.lucene.basic.data.Hotel;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;

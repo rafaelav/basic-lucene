@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package lucene.basic.data;
+package com.lucene.basic.data;
 
 public class Hotel {
     
