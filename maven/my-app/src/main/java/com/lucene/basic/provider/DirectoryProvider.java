@@ -18,6 +18,8 @@ package com.lucene.basic.provider;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.lucene.basic.objects.Encryption;
+import com.lucene.basic.objects.Password;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.NIOFSDirectory;
@@ -32,6 +34,12 @@ public class DirectoryProvider implements SearchProvider<Directory> {
 
     private final String directory;
 
+    @Inject
+    private PasswordProvider passwordProvider;
+
+    @Inject
+    private EncryptionProvider encryption;
+
     // TODO: create a factory to customize the type of directory returned by this provider
     @Inject
     protected DirectoryProvider(final @Named("configuration.lucene.directory") String directory) {
@@ -40,11 +48,14 @@ public class DirectoryProvider implements SearchProvider<Directory> {
 
     @Override
     public Directory get() throws Exception {
-        Directory directory = FSDirectory.open(new File("indexed"));
+        //Directory directory = FSDirectory.open(new File("indexed"));
+        Directory directory = FSDirectory.open(new File(this.directory));
         byte[] salt = new byte[16];
-        String password = "lucenetransform";
-        DataEncryptor enc = new DataEncryptor("AES/ECB/PKCS5Padding", password, salt, 128, false);
-        DataDecryptor dec = new DataDecryptor(password, salt, false);
+        //String password = "lucenetransform";
+        System.out.println("Used password with inject - " + passwordProvider.get().getPasswordText());
+        System.out.println("Used encryption with inject - " + encryption.get().getEncryptionText());
+        DataEncryptor enc = new DataEncryptor(encryption.get().getEncryptionText(), passwordProvider.get().getPasswordText(), salt, 128, false);
+        DataDecryptor dec = new DataDecryptor(passwordProvider.get().getPasswordText(), salt, false);
         return new TransformedDirectory(directory, enc, dec);
     }
 }

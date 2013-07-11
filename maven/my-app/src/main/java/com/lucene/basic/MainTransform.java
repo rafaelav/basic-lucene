@@ -44,7 +44,7 @@ public class MainTransform {
         queryParser = new QueryParser(version, "fieldname", analyzer);
     }
 
-		IndexWriter iwriter = new IndexWriter(cdir, config);
+		//IndexWriter iwriter = new IndexWriter(cdir, config);
 
     public void analyze() throws Exception {
         IndexWriter iwriter = writerProvider.get();

@@ -5,12 +5,9 @@ import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
 import com.google.inject.throwingproviders.ThrowingProviderBinder;
-import com.lucene.basic.provider.AnalyzerProvider;
-import com.lucene.basic.provider.DirectoryProvider;
-import com.lucene.basic.provider.ReaderProvider;
-import com.lucene.basic.provider.SearchProvider;
-import com.lucene.basic.provider.SearcherProvider;
-import com.lucene.basic.provider.WriterProvider;
+import com.lucene.basic.objects.Encryption;
+import com.lucene.basic.objects.Password;
+import com.lucene.basic.provider.*;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -18,6 +15,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
 
+import javax.inject.Provider;
 import java.util.Map;
 
 /**
@@ -32,9 +30,19 @@ public class SearchModule extends AbstractModule {
     protected void configure() {
 
         bind(String.class).annotatedWith(Names.named("configuration.lucene.directory")).toInstance("indexed");
+        bind(String.class).annotatedWith(Names.named("configuration.lucene.password")).toInstance("lucenetransform");
+        bind(String.class).annotatedWith(Names.named("configuration.lucene.encryption")).toInstance("AES/ECB/PKCS5Padding");
 
         bind(Version.class).toInstance(Version.LUCENE_36);
         bind(Analyzer.class).toProvider(AnalyzerProvider.class);
+
+        ThrowingProviderBinder.create(binder())
+                .bind(SearchProvider.class, Password.class)
+                .to(PasswordProvider.class);
+
+        ThrowingProviderBinder.create(binder())
+                .bind(SearchProvider.class, Encryption.class)
+                .to(EncryptionProvider.class);
 
         ThrowingProviderBinder.create(binder())
                 .bind(SearchProvider.class, Directory.class)
