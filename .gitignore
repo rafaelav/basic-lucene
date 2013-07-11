@@ -44,3 +44,9 @@ target/
 indexed/
 .idea/
 miniproject/
+.settings/
+
+# Project #
+###########
+.classpath
+.project
