@@ -8,6 +8,7 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.lucene.basic.module.SearchModule;
+import com.lucene.basic.module.TransformationModule;
 import com.lucene.basic.provider.SearchProvider;
 import com.google.inject.Inject;
 import org.apache.lucene.analysis.Analyzer;
@@ -84,7 +85,7 @@ public class MainTransform {
 
 	public static void main(String[] args) {
         try {
-            Injector injector = Guice.createInjector(new SearchModule());
+            Injector injector = Guice.createInjector(new SearchModule(),new TransformationModule());
             MainTransform mainTransform = injector.getInstance(MainTransform.class);
             mainTransform.analyze();
         } catch (Exception e) {

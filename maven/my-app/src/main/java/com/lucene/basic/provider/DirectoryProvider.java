@@ -18,8 +18,6 @@ package com.lucene.basic.provider;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.lucene.basic.objects.Encryption;
-import com.lucene.basic.objects.Password;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.NIOFSDirectory;
@@ -34,11 +32,21 @@ public class DirectoryProvider implements SearchProvider<Directory> {
 
     private final String directory;
 
-    @Inject
-    private PasswordProvider passwordProvider;
+    @Inject(optional = true)
+    @Named("configuration.lucene.usingCompression")
+    Boolean usingCompression;
 
-    @Inject
-    private EncryptionProvider encryption;
+    @Inject(optional = true)
+    @Named("configuration.lucene.usingEncryption")
+    Boolean usingEncryption;
+
+    @Inject(optional = true)
+    @Named("configuration.lucene.password")
+    String password;
+
+    @Inject(optional = true)
+    @Named("configuration.lucene.encryption")
+    String encryption;
 
     // TODO: create a factory to customize the type of directory returned by this provider
     @Inject
@@ -48,14 +56,19 @@ public class DirectoryProvider implements SearchProvider<Directory> {
 
     @Override
     public Directory get() throws Exception {
-        //Directory directory = FSDirectory.open(new File("indexed"));
         Directory directory = FSDirectory.open(new File(this.directory));
-        byte[] salt = new byte[16];
-        //String password = "lucenetransform";
-        System.out.println("Used password with inject - " + passwordProvider.get().getPasswordText());
-        System.out.println("Used encryption with inject - " + encryption.get().getEncryptionText());
-        DataEncryptor enc = new DataEncryptor(encryption.get().getEncryptionText(), passwordProvider.get().getPasswordText(), salt, 128, false);
-        DataDecryptor dec = new DataDecryptor(passwordProvider.get().getPasswordText(), salt, false);
-        return new TransformedDirectory(directory, enc, dec);
+
+        if(usingEncryption == true) {
+            byte[] salt = new byte[16];
+
+            //TODO - add compression
+            System.out.println("Used password with inject - " + password);
+            System.out.println("Used encryption with inject - " + encryption);
+            DataEncryptor enc = new DataEncryptor(encryption, password, salt, 128, false);
+            DataDecryptor dec = new DataDecryptor(password, salt, false);
+            return new TransformedDirectory(directory, enc, dec);
+        }
+
+        return directory;
     }
 }
