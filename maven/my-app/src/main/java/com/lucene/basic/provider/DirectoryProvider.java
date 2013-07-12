@@ -21,12 +21,18 @@ import com.google.inject.name.Named;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.NIOFSDirectory;
+import org.apache.lucene.store.transform.CompressedIndexDirectory;
 import org.apache.lucene.store.transform.TransformedDirectory;
+import org.apache.lucene.store.transform.algorithm.ReadPipeTransformer;
+import org.apache.lucene.store.transform.algorithm.StorePipeTransformer;
+import org.apache.lucene.store.transform.algorithm.compress.DeflateDataTransformer;
+import org.apache.lucene.store.transform.algorithm.compress.InflateDataTransformer;
 import org.apache.lucene.store.transform.algorithm.security.DataDecryptor;
 import org.apache.lucene.store.transform.algorithm.security.DataEncryptor;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.zip.Deflater;
 
 public class DirectoryProvider implements SearchProvider<Directory> {
 
@@ -66,9 +72,26 @@ public class DirectoryProvider implements SearchProvider<Directory> {
             System.out.println("Used encryption with inject - " + encryption);
             DataEncryptor enc = new DataEncryptor(encryption, password, salt, 128, false);
             DataDecryptor dec = new DataDecryptor(password, salt, false);
+
+            if(usingCompression == true) {
+                StorePipeTransformer st = new StorePipeTransformer(new DeflateDataTransformer(Deflater.BEST_COMPRESSION, 1), enc);
+                ReadPipeTransformer rt = new ReadPipeTransformer(dec, new InflateDataTransformer());
+
+                // encrypted and compressed
+                return new TransformedDirectory(directory, st, rt);
+            }
+
+            // encrypted but not compressed
             return new TransformedDirectory(directory, enc, dec);
         }
+        else {
+            if(usingCompression == true) {
+                // not encrypted but compressed
+                return new CompressedIndexDirectory(directory);
+            }
+        }
 
+        // not encrypted not compressed
         return directory;
     }
 }
