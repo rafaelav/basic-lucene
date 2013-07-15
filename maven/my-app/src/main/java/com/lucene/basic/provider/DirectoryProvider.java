@@ -77,21 +77,25 @@ public class DirectoryProvider implements SearchProvider<Directory> {
                 StorePipeTransformer st = new StorePipeTransformer(new DeflateDataTransformer(Deflater.BEST_COMPRESSION, 1), enc);
                 ReadPipeTransformer rt = new ReadPipeTransformer(dec, new InflateDataTransformer());
 
+                System.out.println("Encryption + compression");
                 // encrypted and compressed
                 return new TransformedDirectory(directory, st, rt);
             }
 
             // encrypted but not compressed
+            System.out.println("Encryption");
             return new TransformedDirectory(directory, enc, dec);
         }
         else {
             if(usingCompression == true) {
                 // not encrypted but compressed
+                System.out.println("Compression");
                 return new CompressedIndexDirectory(directory);
             }
         }
 
         // not encrypted not compressed
+        System.out.println("Normal directory");
         return directory;
     }
 }
