@@ -67,7 +67,7 @@ public class DirectoryProvider implements SearchProvider<Directory> {
     public Directory get() throws Exception {
         Directory directory = FSDirectory.open(new File(this.directory));
 
-        if(usingEncryption == true) {
+        if(usingEncryption) {
             byte[] salt = new byte[16];
 
             logger.debug("Used password with inject - " + password);
@@ -76,7 +76,7 @@ public class DirectoryProvider implements SearchProvider<Directory> {
             DataEncryptor enc = new DataEncryptor(encryption, password, salt, 128, false);
             DataDecryptor dec = new DataDecryptor(password, salt, false);
 
-            if(usingCompression == true) {
+            if(usingCompression) {
                 StorePipeTransformer st = new StorePipeTransformer(new DeflateDataTransformer(Deflater.BEST_COMPRESSION, 1), enc);
                 ReadPipeTransformer rt = new ReadPipeTransformer(dec, new InflateDataTransformer());
 
@@ -91,7 +91,7 @@ public class DirectoryProvider implements SearchProvider<Directory> {
             return new TransformedDirectory(directory, enc, dec);
         }
         else {
-            if(usingCompression == true) {
+            if(usingCompression) {
                 // not encrypted but compressed
                 logger.debug("Compression");
                 return new CompressedIndexDirectory(directory);
