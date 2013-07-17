@@ -29,14 +29,17 @@ import org.apache.lucene.store.transform.algorithm.compress.DeflateDataTransform
 import org.apache.lucene.store.transform.algorithm.compress.InflateDataTransformer;
 import org.apache.lucene.store.transform.algorithm.security.DataDecryptor;
 import org.apache.lucene.store.transform.algorithm.security.DataEncryptor;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Logger;
 import java.util.zip.Deflater;
 
 public class DirectoryProvider implements SearchProvider<Directory> {
 
     private final String directory;
+    private final org.slf4j.Logger logger = LoggerFactory.getLogger(DirectoryProvider.class);
 
     @Inject(optional = true)
     @Named("configuration.lucene.usingCompression")
@@ -67,9 +70,9 @@ public class DirectoryProvider implements SearchProvider<Directory> {
         if(usingEncryption == true) {
             byte[] salt = new byte[16];
 
-            //TODO - add compression
-            System.out.println("Used password with inject - " + password);
-            System.out.println("Used encryption with inject - " + encryption);
+            logger.debug("Used password with inject - " + password);
+            logger.debug("Used encryption with inject - " + encryption);
+
             DataEncryptor enc = new DataEncryptor(encryption, password, salt, 128, false);
             DataDecryptor dec = new DataDecryptor(password, salt, false);
 
@@ -77,25 +80,26 @@ public class DirectoryProvider implements SearchProvider<Directory> {
                 StorePipeTransformer st = new StorePipeTransformer(new DeflateDataTransformer(Deflater.BEST_COMPRESSION, 1), enc);
                 ReadPipeTransformer rt = new ReadPipeTransformer(dec, new InflateDataTransformer());
 
-                System.out.println("Encryption + compression");
+                logger.debug("Encryption + compression");
+
                 // encrypted and compressed
                 return new TransformedDirectory(directory, st, rt);
             }
 
             // encrypted but not compressed
-            System.out.println("Encryption");
+            logger.debug("Encryption");
             return new TransformedDirectory(directory, enc, dec);
         }
         else {
             if(usingCompression == true) {
                 // not encrypted but compressed
-                System.out.println("Compression");
+                logger.debug("Compression");
                 return new CompressedIndexDirectory(directory);
             }
         }
 
         // not encrypted not compressed
-        System.out.println("Normal directory");
+        logger.debug("Normal directory");
         return directory;
     }
 }
