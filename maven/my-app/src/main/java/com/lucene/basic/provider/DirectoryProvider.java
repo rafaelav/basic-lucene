@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.Deflater;
 
@@ -70,8 +71,10 @@ public class DirectoryProvider implements SearchProvider<Directory> {
         if(usingEncryption) {
             byte[] salt = new byte[16];
 
-            logger.debug("Used password with inject - " + password);
-            logger.debug("Used encryption with inject - " + encryption);
+            if (logger.isDebugEnabled()){
+                logger.debug("Used password with inject - " + password);
+                logger.debug("Used encryption with inject - " + encryption);
+            }
 
             DataEncryptor enc = new DataEncryptor(encryption, password, salt, 128, false);
             DataDecryptor dec = new DataDecryptor(password, salt, false);
@@ -80,26 +83,30 @@ public class DirectoryProvider implements SearchProvider<Directory> {
                 StorePipeTransformer st = new StorePipeTransformer(new DeflateDataTransformer(Deflater.BEST_COMPRESSION, 1), enc);
                 ReadPipeTransformer rt = new ReadPipeTransformer(dec, new InflateDataTransformer());
 
-                logger.debug("Encryption + compression");
+                if(logger.isDebugEnabled())
+                    logger.debug("Encryption + compression");
 
                 // encrypted and compressed
                 return new TransformedDirectory(directory, st, rt);
             }
 
             // encrypted but not compressed
-            logger.debug("Encryption");
+            if(logger.isDebugEnabled())
+                logger.debug("Encryption");
             return new TransformedDirectory(directory, enc, dec);
         }
         else {
             if(usingCompression) {
                 // not encrypted but compressed
-                logger.debug("Compression");
+                if(logger.isDebugEnabled())
+                    logger.debug("Compression");
                 return new CompressedIndexDirectory(directory);
             }
         }
 
         // not encrypted not compressed
-        logger.debug("Normal directory");
+        if(logger.isDebugEnabled())
+            logger.debug("Normal directory");
         return directory;
     }
 }
