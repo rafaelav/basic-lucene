@@ -10,12 +10,15 @@ import com.lucene.basic.module.SearchModule;
 import com.lucene.basic.module.TransformationModule;
 import com.lucene.basic.provider.SearchProvider;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.util.Version;
 import org.hamcrest.core.Is;
+import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.assertThat;
@@ -39,17 +42,6 @@ public class DocumentManagerTest {
     @Test
     public void index_shouldIndexTheDocumentsReturnedByTheDocumentBuilder() throws Exception {
         try {
-//            Injector injector = Guice.createInjector(new SearchModule(),new TransformationModule());
-//            DocumentManagerTest documentManagerTest = injector.getInstance(DocumentManagerTest.class);
-//
-//            DocumentManager<Hotel[]> documentManager = new DocumentManager<Hotel[]>(new HotelDocumentBuilder());
-//            if(writerProvider == null)
-//                System.out.println("Writer provider null");
-//            int indexedDocs = documentManager.index(HotelDatabase.getHotels(),writerProvider);
-
-//            Injector injector = Guice.createInjector(new SearchModule(),new TransformationModule());
-//            MainTransform mainTransform = injector.getInstance(MainTransform.class);
-//            int indexedDocs = mainTransform.analyzeIndex(HotelDatabase.getHotels());
 
             Injector injector = Guice.createInjector(new SearchModule(),new TransformationModule());
             DocumentManagerTest documentManagerTest = injector.getInstance(DocumentManagerTest.class);
@@ -79,6 +71,41 @@ public class DocumentManagerTest {
         }
     }
 
+    /**
+     * @verifies return negative if obj parameter is null
+     * @see DocumentManager#index(Object, com.lucene.basic.provider.SearchProvider)
+     */
+    @Test
+    public void index_shouldReturnNegativeIfObjParameterIsNull() throws Exception {
+        try {
+            Injector injector = Guice.createInjector(new SearchModule(),new TransformationModule());
+            DocumentManagerTest documentManagerTest = injector.getInstance(DocumentManagerTest.class);
+            int indexedDocs = documentManagerTest.analyzeIndex(null);
+
+            assertThat(indexedDocs, Is.is(-1));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * @verifies return an non-negative number of hits based on the found results
+     * @see DocumentManager#search(org.apache.lucene.search.Query, String, com.lucene.basic.provider.SearchProvider)
+     */
+    @Test
+    public void search_shouldReturnAnNonnegativeNumberOfHitsBasedOnTheFoundResults() throws Exception {
+        try {
+            Injector injector = Guice.createInjector(new SearchModule(),new TransformationModule());
+            DocumentManagerTest documentManagerTest = injector.getInstance(DocumentManagerTest.class);
+            ScoreDoc[] hits = documentManagerTest.analyzeSearch(HotelDatabase.getHotels(), "Notre Dame museum", "content");
+
+            assert(hits.length >= 0);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private int analyzeIndex(Hotel[] hotels) throws Exception {
         DocumentManager<Hotel[]> documentManager = new DocumentManager<Hotel[]>(new HotelDocumentBuilder());
         return documentManager.index(hotels, writerProvider);
@@ -86,7 +113,9 @@ public class DocumentManagerTest {
 
     private ScoreDoc[] analyzeSearch(Hotel[] hotels, String text, String searchIn) throws Exception {
         DocumentManager<Hotel[]> documentManager = new DocumentManager<Hotel[]>(new HotelDocumentBuilder());
+        queryParser = new QueryParser(Version.LUCENE_36, "content", analyzer);
         Query query = queryParser.parse(text);
         return documentManager.search(query, searchIn, searcherProvider);
     }
+
 }

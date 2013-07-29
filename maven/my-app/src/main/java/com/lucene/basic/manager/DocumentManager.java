@@ -34,9 +34,9 @@ public class DocumentManager<E> {
      * @param obj - it depends on what type of information is indexed - based on it the lucene document is created
      * @should index the documents returned by the document builder
      * @should return 0 when there are no documents to index
+     * @should return negative if obj parameter is null
      *
      */
-    //TODO: @should return negative if obj parameter is null
     public int index (E obj, SearchProvider<IndexWriter> writerProvider) throws Exception {
         if(obj == null)
             return -1;
@@ -61,6 +61,17 @@ public class DocumentManager<E> {
         return docs.size();
     }
 
+    /**
+     * Method aims to search in the indexed documents by fieldname for the ones who respect the search query requirements
+     *
+     * @param query
+     * @param fieldName
+     * @param searcherProvider
+     * @return
+     * @throws Exception
+     *
+     * @should return an non-negative number of hits based on the found results
+     */
     public ScoreDoc[] search (Query query, String fieldName, SearchProvider<IndexSearcher> searcherProvider) throws Exception {
         // creates the index searcher based on the provided reader
         IndexSearcher iSearcher = searcherProvider.get();
@@ -75,6 +86,7 @@ public class DocumentManager<E> {
             // prints only the phrases that contain "text"
             logger.debug("Found" + hitDoc.get(fieldName));
         }
+
         iSearcher.close();
 
         return hits;
