@@ -86,7 +86,7 @@ public class DocumentManager<E> {
             Document hitDoc = iSearcher.doc(hits[i].doc);
 
             // prints only the phrases that contain "text"
-            logger.debug("Found" + hitDoc.get(fieldName));
+            logger.debug("Found - " + hitDoc.get(fieldName));
         }
 
         iSearcher.close();

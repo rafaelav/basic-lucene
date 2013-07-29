@@ -112,8 +112,24 @@ public class DocumentManagerTest {
      */
     @Test
     public void search_shouldHaveResultsWhichAreInAccordanceWithTheGivenQuery() throws Exception {
-        //TODO auto-generated
-        Assert.fail("Not yet implemented");
+        try {
+            Injector injector = Guice.createInjector(new SearchModule(),new TransformationModule());
+            DocumentManagerTest documentManagerTest = injector.getInstance(DocumentManagerTest.class);
+
+            ScoreDoc[] hits;
+
+            hits = documentManagerTest.analyzeSearch(HotelDatabase.getHotels(), "Notre Dame museum", "content");
+            assertThat(hits.length, Is.is(9));
+
+            hits = documentManagerTest.analyzeSearch(HotelDatabase.getHotels(), "Bretton", "name");
+            assertThat(hits.length, Is.is(1));
+
+//            hits = documentManagerTest.analyzeSearch(HotelDatabase.getHotels(), "7", "id");
+//            assertThat(hits.length, Is.is(1));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
