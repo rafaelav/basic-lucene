@@ -23,71 +23,28 @@ import org.apache.lucene.util.Version;
 
 public class MainTransform{
 
-    @Inject
-    private SearchProvider<IndexWriter> writerProvider;
-
-    @Inject
-    private SearchProvider<IndexSearcher> searcherProvider;
-
-    private QueryParser queryParser;
-
-    @Inject
-    public MainTransform(final Version version, final Analyzer analyzer) {
-       // queryParser = new QueryParser(version, "fieldname", analyzer);
-        queryParser = new QueryParser(Version.LUCENE_36, "content", analyzer);
-    }
-
-		//IndexWriter iwriter = new IndexWriter(cdir, config);
-
-    public void analyze() throws Exception {
-//        IndexWriter iwriter = writerProvider.get();
+//    @Inject
+//    private SearchProvider<IndexWriter> writerProvider;
 //
-//        // making 3 docs for 3 phrases
-//        Document doc = new Document();
-//        Document doc2 = new Document();
-//        Document doc3 = new Document();
-//        String text = "This is the text to be indexed.";
-//        String text2 = "My text is here";
-//        String text3 = "Nothing about the word";
-//        doc.add(new Field("fieldname", text, Field.Store.YES, Field.Index.ANALYZED));
-//        doc2.add(new Field("fieldname", text2, Field.Store.YES, Field.Index.ANALYZED));
-//        doc3.add(new Field("fieldname", text3, Field.Store.YES, Field.Index.ANALYZED));
+//    @Inject
+//    private SearchProvider<IndexSearcher> searcherProvider;
 //
-//        // and indexing them
-//        iwriter.addDocument(doc);
-//        iwriter.addDocument(doc2);
-//        iwriter.addDocument(doc3);
+//    private QueryParser queryParser;
 //
-//        iwriter.close();
-//
-//        IndexSearcher isearcher = searcherProvider.get();
-//        // Parse a simple query that searches for "text":
-//        Query query = queryParser.parse("text");
-//        ScoreDoc[] hits = isearcher.search(query, null, 1000).scoreDocs;
-//        // assertEquals(1, hits.length);
-//        // Iterate through the results:
-//        for (int i = 0; i < hits.length; i++) {
-//            Document hitDoc = isearcher.doc(hits[i].doc);
-//
-//            // prints only the phrases that contain "text"
-//            System.out.println(hitDoc.get("fieldname"));
-//        }
-//        isearcher.close();
-        DocumentManager<Hotel[]> documentManager = new DocumentManager<Hotel[]>(new HotelDocumentBuilder());
-        documentManager.index(HotelDatabase.getHotels(),writerProvider);
+//    @Inject
+//    public MainTransform(final Version version, final Analyzer analyzer) {
+//        queryParser = new QueryParser(version, "content", analyzer);
+//    }
 
-        Query query = queryParser.parse("Notre Dame museum");
-
-        documentManager.search(query, "content", searcherProvider);
-    }
-
-	public static void main(String[] args) {
-        try {
-            Injector injector = Guice.createInjector(new SearchModule(),new TransformationModule());
-            MainTransform mainTransform = injector.getInstance(MainTransform.class);
-            mainTransform.analyze();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    public int analyzeIndex(Hotel[] hotels) throws Exception {
+//        DocumentManager<Hotel[]> documentManager = new DocumentManager<Hotel[]>(new HotelDocumentBuilder());
+//        return documentManager.index(hotels, writerProvider);
+//    }
+//
+//    public ScoreDoc[] analyzeSearch(Hotel[] hotels, String text, String searchIn) throws Exception {
+//        DocumentManager<Hotel[]> documentManager = new DocumentManager<Hotel[]>(new HotelDocumentBuilder());
+//        Query query = queryParser.parse(text);
+//        return documentManager.search(query, searchIn, searcherProvider);
+//    }
+                  //"Notre Dame museum"
 }
