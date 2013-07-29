@@ -106,6 +106,26 @@ public class DocumentManagerTest {
         }
     }
 
+    /**
+     * @verifies have results which are in accordance with the given query
+     * @see DocumentManager#search(org.apache.lucene.search.Query, String, com.lucene.basic.provider.SearchProvider)
+     */
+    @Test
+    public void search_shouldHaveResultsWhichAreInAccordanceWithTheGivenQuery() throws Exception {
+        //TODO auto-generated
+        Assert.fail("Not yet implemented");
+    }
+
+    /**
+     * @verifies return an empty array of hits for an empty query
+     * @see DocumentManager#search(org.apache.lucene.search.Query, String, com.lucene.basic.provider.SearchProvider)
+     */
+    @Test
+    public void search_shouldReturnAnEmptyArrayOfHitsForAnEmptyQuery() throws Exception {
+        //TODO auto-generated
+        Assert.fail("Not yet implemented");
+    }
+
     private int analyzeIndex(Hotel[] hotels) throws Exception {
         DocumentManager<Hotel[]> documentManager = new DocumentManager<Hotel[]>(new HotelDocumentBuilder());
         return documentManager.index(hotels, writerProvider);
@@ -117,5 +137,4 @@ public class DocumentManagerTest {
         Query query = queryParser.parse(text);
         return documentManager.search(query, searchIn, searcherProvider);
     }
-
 }

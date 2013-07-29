@@ -71,6 +71,8 @@ public class DocumentManager<E> {
      * @throws Exception
      *
      * @should return an non-negative number of hits based on the found results
+     * @should return an empty array of hits for an empty query
+     * @should have results which are in accordance with the given query
      */
     public ScoreDoc[] search (Query query, String fieldName, SearchProvider<IndexSearcher> searcherProvider) throws Exception {
         // creates the index searcher based on the provided reader
