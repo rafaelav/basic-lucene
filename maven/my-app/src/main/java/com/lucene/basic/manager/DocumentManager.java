@@ -9,6 +9,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,15 +72,21 @@ public class DocumentManager<E> {
      * @throws Exception
      *
      * @should return an non-negative number of hits based on the found results
-     * @should return an empty array of hits for an empty query
      * @should have results which are in accordance with the given query
+     * @should handle encrypted files correctly
      */
     public ScoreDoc[] search (Query query, String fieldName, SearchProvider<IndexSearcher> searcherProvider) throws Exception {
         // creates the index searcher based on the provided reader
-        IndexSearcher iSearcher = searcherProvider.get();
+        IndexSearcher iSearcher;
+        try{
+            iSearcher = searcherProvider.get();
+        }catch (Exception e) {
+            return null;
+        }
 
         // getting results
-        ScoreDoc[] hits = iSearcher.search(query, null, 1000).scoreDocs;
+        ScoreDoc[] hits;
+        hits = iSearcher.search(query, null, 1000).scoreDocs;
 
         // Iterate through the results:
         for (int i = 0; i < hits.length; i++) {
